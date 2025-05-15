@@ -264,9 +264,62 @@
                 margin: 0 auto;
             }
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(44, 62, 80, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px 24px 24px 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+            max-width: 90vw;
+            width: 340px;
+            text-align: center;
+        }
+        .modal h2 {
+            margin-bottom: 18px;
+            color: #2c3e50;
+        }
+        .modal label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            text-align: left;
+        }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        .modal .btn {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
+    <div id="onboard-modal" class="modal-overlay" style="display: none;">
+        <form class="modal" id="onboard-form" autocomplete="off">
+            <h2>Welcome to Culturo!</h2>
+            <label for="user-name">Your Name</label>
+            <input type="text" id="user-name" name="user-name" placeholder="Enter your name" required>
+            <label for="user-city">Your City</label>
+            <input type="text" id="user-city" name="user-city" placeholder="Enter your city" required>
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </form>
+    </div>
+
     <header class="app-header">
         <div class="app-title">Culturo</div>
         <div class="app-actions">
@@ -287,8 +340,8 @@
                     <div class="profile-header">
                         <div class="profile-avatar">👤</div>
                         <div>
-                            <h2>Welcome Back!</h2>
-                            <p>Discover cultural heritage today</p>
+                            <h2 id="welcome-name">Welcome Back!</h2>
+                            <p id="welcome-city">Discover cultural heritage today</p>
                         </div>
                     </div>
                     <div class="stats-grid">
@@ -375,5 +428,40 @@
             <span>Profile</span>
         </a>
     </nav>
+
+    <script>
+    // Onboarding modal logic
+    function showOnboardModal() {
+        document.getElementById('onboard-modal').style.display = 'flex';
+    }
+    function hideOnboardModal() {
+        document.getElementById('onboard-modal').style.display = 'none';
+    }
+    function setWelcome(name, city) {
+        document.getElementById('welcome-name').textContent = `Hello ${name}`;
+        document.getElementById('welcome-city').textContent = `Welcome to ${city}`;
+    }
+    // Check localStorage for user info
+    document.addEventListener('DOMContentLoaded', function() {
+        const storedName = localStorage.getItem('culturo_name');
+        const storedCity = localStorage.getItem('culturo_city');
+        if (storedName && storedCity) {
+            setWelcome(storedName, storedCity);
+        } else {
+            showOnboardModal();
+        }
+        document.getElementById('onboard-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('user-name').value.trim();
+            const city = document.getElementById('user-city').value.trim();
+            if (name && city) {
+                localStorage.setItem('culturo_name', name);
+                localStorage.setItem('culturo_city', city);
+                setWelcome(name, city);
+                hideOnboardModal();
+            }
+        });
+    });
+    </script>
 </body>
 </html> 
